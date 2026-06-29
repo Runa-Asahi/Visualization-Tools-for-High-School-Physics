@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>高中物理可视化演示工具</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="side-panel" aria-label="物理模块导航">
+        <div class="brand">
+          <div class="brand-mark">F</div>
+          <div>
+            <h1>高中物理可视化</h1>
+            <p>力学 · 电磁学 · 光学 · 热学 · 近代物理</p>
+          </div>
+        </div>
+
+        <label class="search-box">
+          <span>搜索</span>
+          <input id="topicSearch" type="search" placeholder="输入知识点或公式" autocomplete="off" />
+        </label>
+
+        <div class="domain-tabs" id="domainTabs" role="tablist" aria-label="按领域筛选"></div>
+        <nav class="topic-list" id="topicList" aria-label="演示主题"></nav>
+      </aside>
+
+      <main class="workspace">
+        <section class="top-strip" aria-label="当前主题信息">
+          <div>
+            <p class="eyebrow" id="domainLabel">力学</p>
+            <h2 id="topicTitle">平抛运动</h2>
+            <p class="topic-summary" id="topicSummary"></p>
+          </div>
+          <div class="run-controls">
+            <button class="icon-button" id="playPause" type="button" title="播放或暂停" aria-label="播放或暂停">▶</button>
+            <button class="icon-button" id="resetScene" type="button" title="重置动画" aria-label="重置动画">↺</button>
+            <button class="icon-button" id="stepScene" type="button" title="单步观察" aria-label="单步观察">▸</button>
+          </div>
+        </section>
+
+        <section class="main-stage">
+          <div class="canvas-wrap">
+            <canvas id="physicsCanvas" width="1200" height="760" aria-label="物理可视化画布"></canvas>
+            <div class="canvas-caption" id="canvasCaption"></div>
+          </div>
+
+          <aside class="inspector" aria-label="参数和讲解">
+            <section class="panel-section">
+              <div class="section-heading">
+                <h3>参数</h3>
+                <button class="text-button" id="resetControls" type="button">恢复默认</button>
+              </div>
+              <div id="controlsPanel" class="controls-panel"></div>
+            </section>
+
+            <section class="panel-section">
+              <h3>实时量</h3>
+              <div id="metricsPanel" class="metrics-grid"></div>
+            </section>
+
+            <section class="panel-section">
+              <h3>核心公式</h3>
+              <div id="formulaPanel" class="formula-panel"></div>
+            </section>
+          </aside>
+        </section>
+
+        <section class="teaching-strip" aria-label="教学设计">
+          <article>
+            <h3>课堂提问</h3>
+            <p id="questionText"></p>
+          </article>
+          <article>
+            <h3>观察重点</h3>
+            <p id="observationText"></p>
+          </article>
+          <article>
+            <h3>易错提醒</h3>
+            <p id="mistakeText"></p>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
