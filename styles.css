@@ -38,7 +38,8 @@ body {
 }
 
 button,
-input {
+input,
+select {
   font: inherit;
 }
 
@@ -379,6 +380,10 @@ canvas {
   line-height: 1.4;
 }
 
+.control-header label {
+  cursor: pointer;
+}
+
 .control-header strong {
   color: var(--ink);
   font-size: 14px;
@@ -393,6 +398,13 @@ canvas {
 input[type="range"] {
   width: 100%;
   accent-color: var(--accent);
+  cursor: pointer;
+}
+
+input[type="range"]:focus-visible {
+  outline: 3px solid rgba(0, 127, 143, 0.35);
+  outline-offset: 3px;
+  border-radius: 4px;
 }
 
 .select-control {
@@ -573,5 +585,38 @@ input[type="range"] {
   .canvas-caption {
     position: static;
     margin: 0 12px 12px;
+  }
+}
+
+.noscript {
+  position: fixed;
+  inset: auto 16px 16px;
+  margin: 0;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: var(--accent-2);
+  color: #fff;
+  font-weight: 700;
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media print {
+  .side-panel,
+  .run-controls,
+  #resetControls {
+    display: none;
+  }
+
+  .app-shell {
+    display: block;
   }
 }
