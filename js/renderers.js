@@ -177,7 +177,7 @@
       const cycle = 6;
       const approach = 2.4;
       const phase = mod(t, cycle);
-      const trackY = h * 0.54;
+      const trackY = Math.max(h * 0.6, 250);
       const mid = w * 0.5;
       const before = phase < approach || !s.willCollide;
       const after = Math.max(0, phase - approach);
@@ -214,8 +214,8 @@
       if (!s.willCollide) {
         label(ctx, "左车速度不大于右车，两车不会相碰", mid - 120, trackY - 110, C.red);
       }
-      drawBar(ctx, 92, 92, w * 0.32, 18, s.pBefore, s.pAfter, "总动量");
-      drawBar(ctx, 92, 172, w * 0.32, 18, s.kBefore, s.kAfter, "总动能");
+      drawBar(ctx, 92, 56, w * 0.32, 18, s.pBefore, s.pAfter, "总动量");
+      drawBar(ctx, 92, 124, w * 0.32, 18, s.kBefore, s.kAfter, "总动能");
 
       return {
         caption: "恢复系数越小，碰撞后两车相对速度越小；系统总动量仍保持一致。",
