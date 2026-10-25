@@ -77,5 +77,38 @@
     return m ? m[1].trim() : "";
   }
 
-  PV.classroom = { snapToControl, encodeState, decodeState, toCSV, parseMetricNumber, metricUnit };
+  const CODE_KEYS = {
+    Space: " ",
+    Period: ".",
+    NumpadDecimal: ".",
+    Slash: "/",
+    BracketLeft: "[",
+    BracketRight: "]",
+    Escape: "escape",
+    ArrowLeft: "arrowleft",
+    ArrowRight: "arrowright"
+  };
+
+  /**
+   * 把键盘事件归一化成快捷键名（小写字母、"?"、"/"、"["、"]"、"."、" "、"escape" 等）。
+   * 中文输入法开启时 keydown 的 key 是 "Process"（或全角字符），CapsLock / Shift 会得到大写，
+   * 因此字母键优先使用与布局无关的 event.code（KeyP → "p"）。
+   */
+  function shortcutKey(event) {
+    const code = event.code || "";
+    if (/^Key[A-Z]$/.test(code)) return code.slice(3).toLowerCase();
+    if (code === "Slash" && event.shiftKey) return "?";
+    if (CODE_KEYS[code] !== undefined) return CODE_KEYS[code];
+    let key = String(event.key || "");
+    // 全角字符 → 半角（如 ｐ → p、？ → ?、［ → [）
+    key = key.replace(/[\uFF01-\uFF5E]/g, (ch) => String.fromCharCode(ch.charCodeAt(0) - 0xfee0));
+    if (key === "。") key = ".";
+    if (key === "、") key = "/";
+    if (key === "【") key = "[";
+    if (key === "】") key = "]";
+    if (key.length === 1) return key.toLowerCase();
+    return key.toLowerCase();
+  }
+
+  PV.classroom = { shortcutKey, snapToControl, encodeState, decodeState, toCSV, parseMetricNumber, metricUnit };
 })(typeof globalThis !== "undefined" ? globalThis : window);
