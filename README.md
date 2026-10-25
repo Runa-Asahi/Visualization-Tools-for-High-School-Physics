@@ -21,6 +21,12 @@
 - **教学设计内置**：每个主题都附带「课堂提问 / 观察重点 / 易错提醒」和核心公式。
 - **课堂友好**：播放 / 暂停 / 单步 / 重置，支持键盘快捷键；高 DPI 屏幕（投影、平板）清晰显示。
 - **可直接分享某个主题**：地址栏会自动带上 `#主题id`，例如 `…/index.html#lens` 直接打开凸透镜成像。
+- **浅色 / 深色主题**：默认跟随系统，按 `T` 或点工具栏按钮切换，选择会被记住。
+- **演示模式（投影）**：点 ⛶ 或按 `F` 全屏、隐藏侧栏、放大字号，适合教室投影。
+- **典型情境预设**：如 u = 2f、完全弹性碰撞、水→空气全反射，一键切换。
+- **播放速度**：0.25× ~ 2×，慢放观察细节。
+- **手机 / 平板适配**：窄屏下侧栏变为抽屉（☰），滑块旁带 − / + 微调按钮，点击画布即可暂停。
+- **新手引导**：首次打开显示使用帮助，随时按 `?` 再次查看。
 - **零依赖**：纯 HTML + CSS + 原生 JavaScript，双击 `index.html` 即可运行，不需要联网和安装。
 
 ## 📚 主题一览
@@ -48,6 +54,8 @@
 | ![平抛](docs/screenshots/projectile.png) | ![碰撞](docs/screenshots/collision.png) |
 | ![电场](docs/screenshots/electric-field.png) | ![干涉](docs/screenshots/interference.png) |
 | ![透镜](docs/screenshots/lens.png) | ![光电效应](docs/screenshots/photoelectric.png) |
+| ![深色主题](docs/screenshots/dark.png) | ![演示模式](docs/screenshots/presentation.png) |
+| ![使用帮助](docs/screenshots/help.png) | ![手机](docs/screenshots/mobile.png) ![手机抽屉](docs/screenshots/mobile-drawer.png) |
 
 </details>
 
@@ -72,9 +80,15 @@
 | `空格` | 播放 / 暂停 |
 | `R` | 重置动画时间 |
 | `.` 或 `Shift + →` | 单步前进（自动暂停） |
+| `[` / `]` | 减慢 / 加快播放速度 |
+| `Alt + ←` / `Alt + →` | 上一个 / 下一个主题 |
+| `F` | 演示模式 / 全屏（`Esc` 退出） |
+| `T` | 切换主题：跟随系统 → 浅色 → 深色 |
+| `?` | 打开使用帮助 |
 | `/` | 聚焦搜索框 |
 | 搜索框中 `Enter` / `Esc` | 打开第一个结果 / 清空搜索 |
 | 双击滑块 | 将该参数恢复默认值 |
+| 点击画布 | 播放 / 暂停（触屏友好） |
 
 ## 🗂️ 项目结构
 
@@ -113,8 +127,10 @@ npm run build:zip   # 重新生成离线包 dist/PhysicsTeachTool.zip
 
 1. 在 `js/physics.js` 中添加纯计算函数（可选，但便于测试）。
 2. 在 `js/topics.js` 的 `topics` 数组中追加主题：`id`、`domain`、`title`、`summary`、`tags`、`renderer`、`controls`、`formulas`、`teaching`。
-3. 在 `js/renderers.js` 中实现同名渲染器 `(ctx, { w, h }, values, time) => ({ caption, metrics })`；如果画面与时间无关，把它加入 `staticRenderers` 以节省性能。
-4. 运行 `npm run check`——测试会自动在每个参数的最小 / 最大值下运行新渲染器，检查是否出现 `NaN`。
+3. （可选）在 `js/topics.js` 末尾的 `presets` 中为该主题添加“典型情境”，测试会校验参数名、范围和步长。
+4. 在 `js/renderers.js` 中实现同名渲染器 `(ctx, { w, h }, values, time) => ({ caption, metrics })`；如果画面与时间无关，把它加入 `staticRenderers` 以节省性能。
+   绘图颜色请使用 `PV.COLORS`（例如 `C.ink`），这样深色主题会自动生效。
+5. 运行 `npm run check`——测试会自动在每个参数的最小 / 最大值下运行新渲染器，检查是否出现 `NaN`。
 
 更多细节见 [CONTRIBUTING.md](./CONTRIBUTING.md)，版本变化见 [CHANGELOG.md](./CHANGELOG.md)。
 
@@ -129,5 +145,6 @@ npm run build:zip   # 重新生成离线包 dist/PhysicsTeachTool.zip
 - **Use online:** <https://teio.asia>
 - **Use offline:** download the repo / `PhysicsTeachTool.zip`, unzip, double-click `index.html`.
 - **Deep links:** append `#<topic-id>` (e.g. `#lens`, `#photoelectric`) to open a specific demo.
-- **Shortcuts:** `Space` play/pause · `R` reset · `.` step · `/` search · double-click a slider to reset it.
+- **Shortcuts:** `Space` play/pause · `R` reset · `.` step · `[`/`]` speed · `Alt+←/→` prev/next topic · `F` presentation mode · `T` theme · `?` help · `/` search · double-click a slider to reset it.
+- **Classroom features:** light/dark theme (follows the OS), fullscreen presentation mode for projectors, one-click presets for typical scenarios, playback speed 0.25×–2×, mobile drawer navigation with touch-friendly steppers, first-run help.
 - **Develop:** `npm run check` runs syntax checks and the `node:test` suite (physics unit tests + renderer smoke tests across parameter extremes). See [CONTRIBUTING.md](./CONTRIBUTING.md).

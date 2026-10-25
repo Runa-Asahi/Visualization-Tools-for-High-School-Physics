@@ -7,25 +7,57 @@
   const { format, lerp, distance, mod, shade } = PV.utils;
 
   /** 统一调色板，与 styles.css 中的 CSS 变量保持一致。 */
-  const COLORS = Object.freeze({
-    ink: "#17212b",
-    muted: "#627184",
-    teal: "#007f8f",
-    red: "#db4c40",
-    amber: "#e2a500",
-    blue: "#3269c8"
+  const THEMES = Object.freeze({
+    light: Object.freeze({
+      ink: "#17212b",
+      muted: "#627184",
+      teal: "#007f8f",
+      red: "#db4c40",
+      amber: "#e2a500",
+      blue: "#3269c8",
+      wheel: "#17212b",
+      wall: "#d9e1e8",
+      bgTop: "#ffffff",
+      bgBottom: "#edf7f8",
+      grid: "rgba(50, 105, 200, 0.08)",
+      hatch: "rgba(23, 33, 43, 0.28)",
+      frame: "rgba(98, 113, 132, 0.5)",
+      track: "rgba(98, 113, 132, 0.18)"
+    }),
+    dark: Object.freeze({
+      ink: "#e6edf3",
+      muted: "#9fb0c2",
+      teal: "#2cc4d3",
+      red: "#ff6b5e",
+      amber: "#f5c136",
+      blue: "#6b9bff",
+      wheel: "#0b1419",
+      wall: "#3a4a57",
+      bgTop: "#122029",
+      bgBottom: "#0c171d",
+      grid: "rgba(120, 170, 255, 0.09)",
+      hatch: "rgba(230, 237, 243, 0.25)",
+      frame: "rgba(159, 176, 194, 0.5)",
+      track: "rgba(159, 176, 194, 0.2)"
+    })
   });
+
+  /** 当前调色板（可变对象，渲染器在绘制时读取属性，因此切换主题即时生效）。 */
+  const COLORS = { ...THEMES.light };
+  function setTheme(name) {
+    Object.assign(COLORS, THEMES[name] || THEMES.light);
+  }
   const LABEL_FONT = '14px "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", Arial, sans-serif';
 
   function drawBackdrop(context, w, h) {
     const gradient = context.createLinearGradient(0, 0, 0, h);
-    gradient.addColorStop(0, "#ffffff");
-    gradient.addColorStop(1, "#edf7f8");
+    gradient.addColorStop(0, COLORS.bgTop);
+    gradient.addColorStop(1, COLORS.bgBottom);
     context.fillStyle = gradient;
     context.fillRect(0, 0, w, h);
 
     context.save();
-    context.strokeStyle = "rgba(50, 105, 200, 0.08)";
+    context.strokeStyle = COLORS.grid;
     context.lineWidth = 1;
     context.beginPath(); // 单条路径批量描边，比逐线 stroke 更快
     for (let x = 0; x <= w; x += 40) {
@@ -41,9 +73,9 @@
   }
 
   function drawGround(context, x, y, width) {
-    line(context, x, y, x + width, y, "#17212b", 3);
+    line(context, x, y, x + width, y, COLORS.ink, 3);
     context.save();
-    context.strokeStyle = "rgba(23, 33, 43, 0.28)";
+    context.strokeStyle = COLORS.hatch;
     context.lineWidth = 1;
     for (let i = x; i < x + width; i += 18) {
       line(context, i, y, i - 12, y + 14);
@@ -52,7 +84,7 @@
   }
 
   function drawAxisLabel(context, text, x, y) {
-    label(context, text, x, y, "#627184");
+    label(context, text, x, y, COLORS.muted);
   }
 
   function drawBall(context, x, y, r, color) {
@@ -168,53 +200,53 @@
 
   function drawGraphFrame(context, x, y, w, h, title) {
     context.save();
-    context.strokeStyle = "rgba(98, 113, 132, 0.5)";
+    context.strokeStyle = COLORS.frame;
     context.lineWidth = 1.5;
     context.strokeRect(x, y, w, h);
-    line(context, x, y + h / 2, x + w, y + h / 2, "rgba(98, 113, 132, 0.5)", 1);
-    label(context, title, x + 8, y - 16, "#627184");
+    line(context, x, y + h / 2, x + w, y + h / 2, COLORS.frame, 1);
+    label(context, title, x + 8, y - 16, COLORS.muted);
     context.restore();
   }
 
   function drawCart(context, x, y, color, text) {
     roundedRect(context, x - 58, y - 34, 116, 48, 8, color);
-    drawBall(context, x - 34, y + 22, 10, "#17212b");
-    drawBall(context, x + 34, y + 22, 10, "#17212b");
+    drawBall(context, x - 34, y + 22, 10, COLORS.wheel);
+    drawBall(context, x + 34, y + 22, 10, COLORS.wheel);
     label(context, text, x - 42, y - 10, "#ffffff");
   }
 
   function drawBar(context, x, y, w, h, before, after, title) {
     const max = Math.max(Math.abs(before), Math.abs(after), 1);
-    label(context, title, x, y - 18, "#17212b");
-    roundedRect(context, x, y, w, h, 4, "rgba(98, 113, 132, 0.18)");
-    roundedRect(context, x, y, (Math.abs(before) / max) * w, h, 4, "#3269c8");
-    roundedRect(context, x, y + 24, w, h, 4, "rgba(98, 113, 132, 0.18)");
-    roundedRect(context, x, y + 24, (Math.abs(after) / max) * w, h, 4, "#db4c40");
-    label(context, `前 ${format(before, 2)}`, x + w + 12, y + h / 2, "#3269c8");
-    label(context, `后 ${format(after, 2)}`, x + w + 12, y + 24 + h / 2, "#db4c40");
+    label(context, title, x, y - 18, COLORS.ink);
+    roundedRect(context, x, y, w, h, 4, COLORS.track);
+    roundedRect(context, x, y, (Math.abs(before) / max) * w, h, 4, COLORS.blue);
+    roundedRect(context, x, y + 24, w, h, 4, COLORS.track);
+    roundedRect(context, x, y + 24, (Math.abs(after) / max) * w, h, 4, COLORS.red);
+    label(context, `前 ${format(before, 2)}`, x + w + 12, y + h / 2, COLORS.blue);
+    label(context, `后 ${format(after, 2)}`, x + w + 12, y + 24 + h / 2, COLORS.red);
   }
 
   function drawCharge(context, x, y, q) {
-    const color = q >= 0 ? "#db4c40" : "#3269c8";
+    const color = q >= 0 ? COLORS.red : COLORS.blue;
     drawBall(context, x, y, 22, color);
     label(context, q >= 0 ? "+" : "−", x - 5, y + 1, "#ffffff");
-    label(context, `${format(q, 1)} μC`, x - 24, y + 38, "#17212b");
+    label(context, `${format(q, 1)} μC`, x - 24, y + 38, COLORS.ink);
   }
 
   function drawBattery(context, x, y, voltage) {
     context.save();
-    context.strokeStyle = "#17212b";
+    context.strokeStyle = COLORS.ink;
     context.lineWidth = 4;
     line(context, x - 22, y - 42, x - 22, y + 42);
     line(context, x + 12, y - 28, x + 12, y + 28);
-    label(context, `${format(voltage, 1)} V`, x + 22, y, "#17212b");
+    label(context, `${format(voltage, 1)} V`, x + 22, y, COLORS.ink);
     context.restore();
   }
 
   function drawResistor(context, x1, y1, x2, y2, text) {
     const horizontal = Math.abs(x2 - x1) >= Math.abs(y2 - y1);
     context.save();
-    context.strokeStyle = "#db4c40";
+    context.strokeStyle = COLORS.red;
     context.lineWidth = 4;
     context.beginPath();
     if (horizontal) {
@@ -226,7 +258,7 @@
         context.lineTo(x, y);
       }
       context.lineTo(x2, y2);
-      label(context, text, (x1 + x2) / 2 - 38, y1 - 32, "#17212b");
+      label(context, text, (x1 + x2) / 2 - 38, y1 - 32, COLORS.ink);
     } else {
       const length = y2 - y1;
       context.moveTo(x1, y1);
@@ -236,7 +268,7 @@
         context.lineTo(x, y);
       }
       context.lineTo(x2, y2);
-      label(context, text, x1 + 24, (y1 + y2) / 2, "#17212b");
+      label(context, text, x1 + 24, (y1 + y2) / 2, COLORS.ink);
     }
     context.stroke();
     context.restore();
@@ -258,7 +290,7 @@
       const d = mod(t * speed + (i / count) * total, total);
       const segment = segments.find((item) => d >= item.start && d <= item.start + item.length) ?? segments[0];
       const p = (d - segment.start) / segment.length;
-      drawBall(context, lerp(segment.x1, segment.x2, p), lerp(segment.y1, segment.y2, p), 4, "#e2a500");
+      drawBall(context, lerp(segment.x1, segment.x2, p), lerp(segment.y1, segment.y2, p), 4, COLORS.amber);
     }
   }
 
@@ -272,7 +304,7 @@
 
   function drawLensShape(context, x, y, height) {
     context.save();
-    context.strokeStyle = "#007f8f";
+    context.strokeStyle = COLORS.teal;
     context.fillStyle = "rgba(0, 127, 143, 0.14)";
     context.lineWidth = 3;
     context.beginPath();
@@ -285,8 +317,8 @@
   }
 
   function drawFocus(context, x, y, text) {
-    drawBall(context, x, y, 4, "#e2a500");
-    label(context, text, x - 7, y + 22, "#17212b");
+    drawBall(context, x, y, 4, COLORS.amber);
+    label(context, text, x - 7, y + 22, COLORS.ink);
   }
 
   function drawAngle(context, x, y, a1, a2, radius, color, text) {
@@ -322,19 +354,21 @@
 
   function drawEnergyBars(context, x, y, w, photonEnergy, work, kinetic) {
     const max = Math.max(photonEnergy, work + kinetic, 1);
-    label(context, "能量分配", x, y - 20, "#17212b");
-    roundedRect(context, x, y, w, 18, 4, "rgba(98, 113, 132, 0.16)");
-    roundedRect(context, x, y, (photonEnergy / max) * w, 18, 4, "#e2a500");
-    roundedRect(context, x, y + 32, w, 18, 4, "rgba(98, 113, 132, 0.16)");
-    roundedRect(context, x, y + 32, (work / max) * w, 18, 4, "#627184");
+    label(context, "能量分配", x, y - 20, COLORS.ink);
+    roundedRect(context, x, y, w, 18, 4, COLORS.track);
+    roundedRect(context, x, y, (photonEnergy / max) * w, 18, 4, COLORS.amber);
+    roundedRect(context, x, y + 32, w, 18, 4, COLORS.track);
+    roundedRect(context, x, y + 32, (work / max) * w, 18, 4, COLORS.muted);
     if (kinetic > 0) {
-      roundedRect(context, x + (work / max) * w, y + 32, (kinetic / max) * w, 18, 4, "#3269c8");
+      roundedRect(context, x + (work / max) * w, y + 32, (kinetic / max) * w, 18, 4, COLORS.blue);
     }
-    label(context, `hf ${format(photonEnergy, 2)} eV`, x + w + 10, y + 9, "#e2a500");
-    label(context, `W₀ + Eₖ`, x + w + 10, y + 41, "#17212b");
+    label(context, `hf ${format(photonEnergy, 2)} eV`, x + w + 10, y + 9, COLORS.amber);
+    label(context, `W₀ + Eₖ`, x + w + 10, y + 41, COLORS.ink);
   }
 
   PV.COLORS = COLORS;
+  PV.THEMES = THEMES;
+  PV.setTheme = setTheme;
   PV.draw = {
     drawBackdrop,
     drawGround,

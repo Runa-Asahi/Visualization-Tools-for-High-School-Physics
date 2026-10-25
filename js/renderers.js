@@ -143,7 +143,7 @@
       const massX = eqX + s.x * pxPerCm;
 
       ctx.save();
-      ctx.fillStyle = "#d9e1e8";
+      ctx.fillStyle = C.wall;
       ctx.fillRect(wallX - 12, baseY - 82, 18, 164);
       ctx.restore();
       drawSpring(ctx, wallX + 6, baseY, massX - 42, baseY, 11, 20, C.blue);
@@ -314,10 +314,16 @@
 
     induction(ctx, { w, h }, v, t) {
       const s = P.induction(v, t);
-      const center = { x: w * 0.38, y: h * 0.45 };
+      // 磁铁+线圈区域按可用宽度缩放，避免窄画布中与 ε-t 图重叠
+      const k = Math.min(1, (w * 0.54) / 560, (h * 0.8) / 260);
+      const center = { x: w * 0.3, y: h * 0.45 };
       const coilW = 190 * Math.abs(Math.cos(s.theta)) + 26;
       const coilH = 150;
 
+      ctx.save();
+      ctx.translate(center.x, center.y);
+      ctx.scale(k, k);
+      ctx.translate(-center.x, -center.y);
       label(ctx, "N", center.x - 250, center.y - 116, C.red);
       label(ctx, "S", center.x + 218, center.y - 116, C.blue);
       roundedRect(ctx, center.x - 270, center.y - 95, 74, 190, 8, C.red);
@@ -333,8 +339,9 @@
       ctx.stroke();
       ctx.restore();
       drawVector(ctx, center.x, center.y, center.x + Math.cos(s.theta + Math.PI / 2) * 90, center.y + Math.sin(s.theta + Math.PI / 2) * 70, C.amber, "转动");
+      ctx.restore();
 
-      const graphX = w * 0.57;
+      const graphX = w * 0.6;
       const graphY = h * 0.28;
       const graphW = w * 0.34;
       const graphH = h * 0.38;

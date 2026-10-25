@@ -55,3 +55,35 @@ for (const topic of PV.topics) {
     }
   });
 }
+
+test("presets reference real controls with valid values", () => {
+  for (const topic of PV.topics) {
+    assert.ok(Array.isArray(topic.presets), `${topic.id}: presets missing`);
+    for (const preset of topic.presets) {
+      assert.ok(preset.label, `${topic.id}: preset label`);
+      for (const [key, value] of Object.entries(preset.values)) {
+        const c = topic.controls.find((x) => x.key === key);
+        assert.ok(c, `${topic.id}/${preset.label}: unknown control ${key}`);
+        if (c.type === "select") {
+          assert.ok(c.options.some((o) => o.value === value), `${topic.id}/${preset.label}: bad option ${value}`);
+        } else {
+          assert.ok(value >= c.min && value <= c.max, `${topic.id}/${preset.label}: ${key}=${value} out of range`);
+          const steps = (value - c.min) / c.step;
+          assert.ok(Math.abs(steps - Math.round(steps)) < 1e-6, `${topic.id}/${preset.label}: ${key}=${value} not on step grid`);
+        }
+      }
+    }
+  }
+});
+
+test("dark and light palettes define the same keys and render without errors", () => {
+  assert.deepEqual(Object.keys(PV.THEMES.dark).sort(), Object.keys(PV.THEMES.light).sort());
+  PV.setTheme("dark");
+  for (const topic of PV.topics) {
+    const values = Object.fromEntries(topic.controls.map((c) => [c.key, c.default]));
+    PV.renderers[topic.renderer](mockContext(), { w: 800, h: 600 }, values, 1);
+  }
+  assert.equal(PV.COLORS.ink, PV.THEMES.dark.ink);
+  PV.setTheme("light");
+  assert.equal(PV.COLORS.ink, PV.THEMES.light.ink);
+});
