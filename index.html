@@ -3,6 +3,12 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="面向高中物理课堂的交互式可视化演示工具：平抛、圆周运动、简谐运动、碰撞、电场、电路、电磁感应、干涉、透镜、折射、理想气体、光电效应。" />
+    <meta name="theme-color" content="#12373f" />
+    <meta property="og:title" content="高中物理可视化演示工具" />
+    <meta property="og:description" content="12 个可交互的高中物理演示，打开浏览器即可上课使用。" />
+    <meta property="og:image" content="./_preview.png" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23f1b83d'/%3E%3Ctext x='32' y='44' font-size='36' font-family='Arial' font-weight='700' text-anchor='middle' fill='%23102027'%3EF%3C/text%3E%3C/svg%3E" />
     <title>高中物理可视化演示工具</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
@@ -10,7 +16,7 @@
     <div class="app-shell">
       <aside class="side-panel" aria-label="物理模块导航">
         <div class="brand">
-          <div class="brand-mark">F</div>
+          <div class="brand-mark" aria-hidden="true">F</div>
           <div>
             <h1>高中物理可视化</h1>
             <p>力学 · 电磁学 · 光学 · 热学 · 近代物理</p>
@@ -19,10 +25,10 @@
 
         <label class="search-box">
           <span>搜索</span>
-          <input id="topicSearch" type="search" placeholder="输入知识点或公式" autocomplete="off" />
+          <input id="topicSearch" type="search" placeholder="输入知识点或公式（按 / 聚焦）" autocomplete="off" aria-controls="topicList" />
         </label>
 
-        <div class="domain-tabs" id="domainTabs" role="tablist" aria-label="按领域筛选"></div>
+        <div class="domain-tabs" id="domainTabs" role="group" aria-label="按领域筛选"></div>
         <nav class="topic-list" id="topicList" aria-label="演示主题"></nav>
       </aside>
 
@@ -30,20 +36,20 @@
         <section class="top-strip" aria-label="当前主题信息">
           <div>
             <p class="eyebrow" id="domainLabel">力学</p>
-            <h2 id="topicTitle">平抛运动</h2>
+            <h2 id="topicTitle">平抛与斜抛运动</h2>
             <p class="topic-summary" id="topicSummary"></p>
           </div>
           <div class="run-controls">
             <button class="icon-button" id="playPause" type="button" title="播放或暂停" aria-label="播放或暂停">▶</button>
-            <button class="icon-button" id="resetScene" type="button" title="重置动画" aria-label="重置动画">↺</button>
-            <button class="icon-button" id="stepScene" type="button" title="单步观察" aria-label="单步观察">▸</button>
+            <button class="icon-button" id="resetScene" type="button" title="重置动画（R）" aria-label="重置动画">↺</button>
+            <button class="icon-button" id="stepScene" type="button" title="单步观察（.）" aria-label="单步观察">▸</button>
           </div>
         </section>
 
         <section class="main-stage">
           <div class="canvas-wrap">
-            <canvas id="physicsCanvas" width="1200" height="760" aria-label="物理可视化画布"></canvas>
-            <div class="canvas-caption" id="canvasCaption"></div>
+            <canvas id="physicsCanvas" width="1200" height="760" role="img" aria-label="物理可视化画布" aria-describedby="canvasCaption"></canvas>
+            <div class="canvas-caption" id="canvasCaption" aria-live="polite"></div>
           </div>
 
           <aside class="inspector" aria-label="参数和讲解">
@@ -57,7 +63,7 @@
 
             <section class="panel-section">
               <h3>实时量</h3>
-              <div id="metricsPanel" class="metrics-grid"></div>
+              <div id="metricsPanel" class="metrics-grid" aria-live="off"></div>
             </section>
 
             <section class="panel-section">
@@ -84,6 +90,16 @@
       </main>
     </div>
 
-    <script src="./app.js"></script>
+    <noscript>
+      <p class="noscript">本工具需要启用 JavaScript 才能运行。This app requires JavaScript.</p>
+    </noscript>
+
+    <!-- 按依赖顺序加载；使用普通脚本而非 ES Module，保证双击 index.html（file://）即可运行 -->
+    <script src="./js/utils.js"></script>
+    <script src="./js/physics.js"></script>
+    <script src="./js/topics.js"></script>
+    <script src="./js/draw.js"></script>
+    <script src="./js/renderers.js"></script>
+    <script src="./js/app.js"></script>
   </body>
 </html>

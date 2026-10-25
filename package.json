@@ -1,0 +1,16 @@
+{
+  "name": "visualization-tools-for-high-school-physics",
+  "version": "1.1.0",
+  "private": true,
+  "description": "高中物理可视化演示工具 — interactive, dependency-free physics demos for high-school classrooms.",
+  "scripts": {
+    "start": "npx --yes http-server . -p 8080 -c-1",
+    "lint": "node scripts/check.js",
+    "test": "node --test tests/",
+    "check": "npm run lint && npm test",
+    "build:zip": "node scripts/build-zip.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
