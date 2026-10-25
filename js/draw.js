@@ -366,6 +366,24 @@
     label(context, `W₀ + Eₖ`, x + w + 10, y + 41, COLORS.ink);
   }
 
+  /** 不绘制任何内容的上下文，用于只取渲染器的数值结果（例如实时图像的候选量）。 */
+  const gradientStub = { addColorStop() {} };
+  const nullContext = new Proxy(
+    {},
+    {
+      get(target, key) {
+        if (key in target) return target[key];
+        if (key === "createLinearGradient" || key === "createRadialGradient") return () => gradientStub;
+        return () => {};
+      },
+      set(target, key, value) {
+        target[key] = value;
+        return true;
+      }
+    }
+  );
+
+  PV.nullContext = nullContext;
   PV.COLORS = COLORS;
   PV.THEMES = THEMES;
   PV.setTheme = setTheme;
