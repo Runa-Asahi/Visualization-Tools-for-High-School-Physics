@@ -9,6 +9,8 @@
   const { domains, topics, renderers, staticRenderers } = PV;
   const ALL = domains[0];
   const STEP_SECONDS = 1 / 24;
+  /** 渲染器的最小设计尺寸（CSS 像素）。 */
+  const DESIGN_MIN = { w: 560, h: 440 };
 
   const topicById = new Map(topics.map((topic) => [topic.id, topic]));
   const $ = (id) => document.getElementById(id);
@@ -621,8 +623,12 @@
   function renderScene() {
     const topic = currentTopic();
     const size = prepareCanvas();
-    PV.draw.drawBackdrop(ctx, size.w, size.h);
-    const result = renderers[topic.renderer](ctx, size, state.values, state.time);
+    // 画布较小时（短屏 / 手机）按设计最小尺寸整体等比缩放，避免固定像素布局互相重叠
+    const k = Math.min(1, size.w / DESIGN_MIN.w, size.h / DESIGN_MIN.h);
+    const logical = { w: size.w / k, h: size.h / k };
+    if (k < 1) ctx.scale(k, k);
+    PV.draw.drawBackdrop(ctx, logical.w, logical.h);
+    const result = renderers[topic.renderer](ctx, logical, state.values, state.time);
     renderMetrics(result.metrics);
     if (result.caption !== state.lastCaption) {
       el.canvasCaption.textContent = result.caption;
@@ -680,8 +686,8 @@
   function prepareCanvas() {
     const rect = el.canvas.getBoundingClientRect();
     const dpr = root.devicePixelRatio || 1;
-    const width = Math.max(320, rect.width);
-    const height = Math.max(360, rect.height);
+    const width = Math.max(240, rect.width);
+    const height = Math.max(220, rect.height);
     const targetWidth = Math.round(width * dpr);
     const targetHeight = Math.round(height * dpr);
     if (el.canvas.width !== targetWidth || el.canvas.height !== targetHeight) {
