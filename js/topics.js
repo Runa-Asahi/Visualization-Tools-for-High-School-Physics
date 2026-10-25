@@ -298,6 +298,71 @@
     }
   ];
 
+  /**
+   * 课堂常用预设：一键切换到典型情境。只需列出与默认值不同的参数。
+   * Classroom presets: one click jumps to a typical scenario (only overridden keys listed).
+   */
+  const presets = {
+    projectile: [
+      { label: "平抛", values: { angle: 0, height: 10 } },
+      { label: "45° 最远", values: { angle: 45, height: 0 } },
+      { label: "月球表面", values: { gravity: 1.6 } }
+    ],
+    circular: [
+      { label: "速度加倍", values: { speed: 12 } },
+      { label: "半径减半", values: { radius: 1.6 } }
+    ],
+    shm: [
+      { label: "小振幅", values: { amplitude: 3 } },
+      { label: "高频", values: { omega: 5 } }
+    ],
+    collision: [
+      { label: "完全弹性", values: { e: 1 } },
+      { label: "完全非弹性", values: { e: 0 } },
+      { label: "等质量弹性", values: { m1: 2, m2: 2, v1: 3, v2: 0, e: 1 } }
+    ],
+    "electric-field": [
+      { label: "等量异种", values: { q1: 4, q2: -4 } },
+      { label: "等量同种", values: { q1: 4, q2: 4, probeX: 0, probeY: 0 } }
+    ],
+    circuit: [
+      { label: "串联", values: { mode: "series" } },
+      { label: "并联", values: { mode: "parallel" } },
+      { label: "等值电阻并联", values: { mode: "parallel", r1: 20, r2: 20 } }
+    ],
+    induction: [
+      { label: "转速加倍", values: { omega: 5.6 } },
+      { label: "单匝线圈", values: { turns: 1 } }
+    ],
+    interference: [
+      { label: "同相", values: { phase: 0 } },
+      { label: "反相", values: { phase: 180 } }
+    ],
+    lens: [
+      { label: "u > 2f", values: { focal: 16, object: 42 } },
+      { label: "u = 2f", values: { focal: 16, object: 32 } },
+      { label: "f < u < 2f", values: { focal: 16, object: 24 } },
+      { label: "u < f（放大镜）", values: { focal: 16, object: 10 } }
+    ],
+    refraction: [
+      { label: "空气→玻璃", values: { n1: 1, n2: 1.5, angle: 42 } },
+      { label: "水→空气（全反射）", values: { n1: 1.35, n2: 1, angle: 60 } },
+      { label: "垂直入射", values: { angle: 0 } }
+    ],
+    gas: [
+      { label: "等温压缩", values: { temperature: 300, volume: 6 } },
+      { label: "升温", values: { temperature: 600 } }
+    ],
+    photoelectric: [
+      { label: "低于截止频率", values: { frequency: 4, work: 2.3 } },
+      { label: "强光仍不逸出", values: { frequency: 4, work: 2.3, intensity: 10 } },
+      { label: "紫外光", values: { frequency: 14 } }
+    ]
+  };
+  topics.forEach((topic) => {
+    topic.presets = presets[topic.id] || [];
+  });
+
   PV.domains = domains;
   PV.topics = topics;
 })(typeof globalThis !== "undefined" ? globalThis : window);
