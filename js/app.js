@@ -344,59 +344,63 @@
     bindClassroomTools();
 
     root.addEventListener("keydown", (event) => {
-      if (event.key === "Escape" && el.appShell.classList.contains("drawer-open")) {
+      // 归一化：兼容中文输入法（key 为 "Process"）、CapsLock / Shift 大写、全角字符
+      const k = CL.shortcutKey(event);
+      if (k === "escape" && el.appShell.classList.contains("drawer-open")) {
         setDrawer(false);
         return;
       }
-      if (event.altKey && !event.ctrlKey && !event.metaKey && (event.key === "ArrowLeft" || event.key === "ArrowRight")) {
+      if (event.altKey && !event.ctrlKey && !event.metaKey && (k === "arrowleft" || k === "arrowright")) {
         event.preventDefault();
-        selectAdjacentTopic(event.key === "ArrowRight" ? 1 : -1);
+        selectAdjacentTopic(k === "arrowright" ? 1 : -1);
         return;
       }
-      if ((event.ctrlKey || event.metaKey) && (event.key === "z" || event.key === "Z") && pen.active) {
+      if ((event.ctrlKey || event.metaKey) && k === "z" && pen.active) {
         event.preventDefault();
         undoInk();
         return;
       }
       if (event.altKey || event.ctrlKey || event.metaKey || isTypingTarget(event.target)) return;
-      // 焦点在按钮上时，空格/回车交给按钮本身；字母快捷键仍然可用
       if (el.helpDialog && el.helpDialog.open) return;
-      if (event.key === "Escape" && pen.active) {
+      const tag = event.target && event.target.tagName;
+      // 下拉框获得焦点时，空格 / 方向键留给下拉框本身，其余快捷键照常可用
+      if (tag === "SELECT" && (k === " " || k.startsWith("arrow") || k === "enter")) return;
+      const actions = {
+        d: recordRow,
+        p: () => setPen(!pen.active),
+        s: exportPNG,
+        l: copyShareLink,
+        f: () => setPresenting(!state.presenting),
+        t: cycleTheme,
+        "?": openHelp,
+        "[": () => nudgeSpeed(-1),
+        "]": () => nudgeSpeed(1),
+        r: () => {
+          state.time = 0;
+          graph.samples = [];
+          invalidate();
+        },
+        ".": stepOnce
+      };
+      if (k === "escape" && pen.active) {
         setPen(false);
-      } else if ((event.key === "z" || event.key === "Z") && pen.active) {
+      } else if (k === "z" && pen.active) {
         undoInk();
-      } else if (event.key === "d" || event.key === "D") {
-        recordRow();
-      } else if (event.key === "p" || event.key === "P") {
-        setPen(!pen.active);
-      } else if (event.key === "s" || event.key === "S") {
-        exportPNG();
-      } else if (event.key === "l" || event.key === "L") {
-        copyShareLink();
-      } else if (event.key === "Escape" && state.presenting) {
+      } else if (k === "escape" && state.presenting) {
         setPresenting(false);
-      } else if (event.key === "f" || event.key === "F") {
-        setPresenting(!state.presenting);
-      } else if (event.key === "t" || event.key === "T") {
-        cycleTheme();
-      } else if (event.key === "?") {
-        openHelp();
-      } else if (event.key === "[") {
-        nudgeSpeed(-1);
-      } else if (event.key === "]") {
-        nudgeSpeed(1);
-      } else if (event.code === "Space" && !event.repeat && event.target.tagName !== "BUTTON") {
+      } else if (k === " ") {
+        if (event.repeat || tag === "BUTTON") return;
         event.preventDefault();
         toggleRunning();
-      } else if (event.key === "r" || event.key === "R") {
-        state.time = 0;
-        graph.samples = [];
-        invalidate();
-      } else if (event.key === "." || (event.key === "ArrowRight" && event.shiftKey && event.target.tagName !== "INPUT")) {
-        stepOnce();
-      } else if (event.key === "/") {
+      } else if (k === "/") {
         event.preventDefault();
         el.topicSearch.focus();
+      } else if (k === "arrowright" && event.shiftKey && tag !== "INPUT") {
+        stepOnce();
+      } else if (Object.prototype.hasOwnProperty.call(actions, k)) {
+        if (event.repeat && k !== "[" && k !== "]") return;
+        event.preventDefault();
+        actions[k]();
       }
     });
 
@@ -434,7 +438,7 @@
 
   function isTypingTarget(target) {
     if (!target) return false;
-    if (target.isContentEditable || ["TEXTAREA", "SELECT"].includes(target.tagName)) return true;
+    if (target.isContentEditable || target.tagName === "TEXTAREA") return true;
     // 滑块仍允许字母快捷键（方向键由滑块自身处理）
     if (target.tagName === "INPUT") return !["range", "button", "checkbox", "radio"].includes(target.type);
     return false;

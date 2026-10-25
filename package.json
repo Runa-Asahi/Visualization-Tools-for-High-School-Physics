@@ -1,6 +1,6 @@
 {
   "name": "visualization-tools-for-high-school-physics",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "private": true,
   "description": "高中物理可视化演示工具 — interactive, dependency-free physics demos for high-school classrooms.",
   "scripts": {

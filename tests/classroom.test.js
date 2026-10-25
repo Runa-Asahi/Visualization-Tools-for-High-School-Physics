@@ -61,3 +61,19 @@ test("parseMetricNumber / metricUnit", () => {
   assert.equal(C.metricUnit("12.5 m/s"), "m/s");
   assert.equal(C.metricUnit("0"), "");
 });
+
+test("shortcutKey handles IME, CapsLock, Shift and full-width input", () => {
+  const k = (o) => C.shortcutKey(o);
+  assert.equal(k({ key: "p", code: "KeyP" }), "p");
+  assert.equal(k({ key: "P", code: "KeyP", shiftKey: true }), "p");
+  assert.equal(k({ key: "Process", code: "KeyD" }), "d"); // 中文输入法
+  assert.equal(k({ key: "ｐ", code: "" }), "p"); // 全角
+  assert.equal(k({ key: "Process", code: "Slash", shiftKey: true }), "?");
+  assert.equal(k({ key: "？", code: "" }), "?");
+  assert.equal(k({ key: "Process", code: "BracketLeft" }), "[");
+  assert.equal(k({ key: "【", code: "" }), "[");
+  assert.equal(k({ key: "。", code: "" }), ".");
+  assert.equal(k({ key: " ", code: "Space" }), " ");
+  assert.equal(k({ key: "Escape", code: "Escape" }), "escape");
+  assert.equal(k({ key: "ArrowRight", code: "ArrowRight" }), "arrowright");
+});
