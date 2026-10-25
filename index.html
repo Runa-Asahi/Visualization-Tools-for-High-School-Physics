@@ -73,12 +73,29 @@
               <button class="icon-button" id="presentToggle" type="button" title="演示模式 / 全屏（F）" aria-label="进入演示模式" aria-pressed="false">⛶</button>
               <button class="icon-button" id="helpButton" type="button" title="使用帮助（?）" aria-label="使用帮助" aria-haspopup="dialog">?</button>
             </div>
+            <div class="button-group" aria-label="课堂工具">
+              <button class="icon-button" id="recordButton" type="button" title="记录当前数据（D）" aria-label="记录当前数据">记</button>
+              <button class="icon-button" id="penToggle" type="button" title="画笔批注（P）" aria-label="画笔批注" aria-pressed="false">笔</button>
+              <button class="icon-button" id="snapshotButton" type="button" title="导出图片 PNG（S）" aria-label="导出图片">图</button>
+              <button class="icon-button" id="shareButton" type="button" title="复制当前参数链接（L）" aria-label="复制分享链接">链</button>
+              <button class="icon-button" id="printButton" type="button" title="打印讲义" aria-label="打印讲义">印</button>
+            </div>
           </div>
         </section>
 
         <section class="main-stage">
           <div class="canvas-wrap">
             <canvas id="physicsCanvas" width="1200" height="760" role="img" aria-label="物理可视化画布" aria-describedby="canvasCaption"></canvas>
+            <canvas id="inkCanvas" class="ink-canvas" aria-hidden="true"></canvas>
+            <div class="pen-bar" id="penBar" role="toolbar" aria-label="画笔工具" hidden>
+              <button type="button" class="pen-color active" data-color="#e5383b" style="--c: #e5383b" aria-label="红色画笔"></button>
+              <button type="button" class="pen-color" data-color="#1d6fe0" style="--c: #1d6fe0" aria-label="蓝色画笔"></button>
+              <button type="button" class="pen-color" data-color="#16a34a" style="--c: #16a34a" aria-label="绿色画笔"></button>
+              <button type="button" class="pen-color" data-color="#f5b400" style="--c: #f5b400" aria-label="黄色画笔"></button>
+              <button type="button" class="pen-action" id="penUndo" aria-label="撤销一笔" title="撤销（Ctrl+Z）">撤销</button>
+              <button type="button" class="pen-action" id="penClear" aria-label="清除批注" title="清除全部批注">清除</button>
+              <button type="button" class="pen-action" id="penDone" aria-label="退出画笔" title="退出画笔（P / Esc）">完成</button>
+            </div>
             <div class="canvas-caption" id="canvasCaption" aria-live="polite"></div>
           </div>
 
@@ -99,6 +116,31 @@
             <section class="panel-section metrics-section" id="metricsSection">
               <h3>实时量</h3>
               <div id="metricsPanel" class="metrics-grid" aria-live="off"></div>
+            </section>
+
+            <section class="panel-section graph-section" id="graphSection">
+              <div class="section-heading">
+                <h3>实时图像</h3>
+                <label class="graph-picker">
+                  <span class="visually-hidden">选择要绘制的物理量</span>
+                  <select id="graphSelect" class="select-control compact" aria-label="选择要绘制的物理量"></select>
+                </label>
+              </div>
+              <canvas id="graphCanvas" class="graph-canvas" role="img" aria-label="所选物理量随时间变化的图像"></canvas>
+            </section>
+
+            <section class="panel-section data-section" id="dataSection">
+              <div class="section-heading">
+                <h3>数据记录 <small id="dataCount" class="data-count"></small></h3>
+                <div class="data-actions">
+                  <button class="text-button" id="dataRecord" type="button" title="记录当前数据（D）">记录</button>
+                  <button class="text-button" id="dataExport" type="button" title="导出为 CSV（可用 Excel 打开）">导出 CSV</button>
+                  <button class="text-button" id="dataClear" type="button">清空</button>
+                </div>
+              </div>
+              <div class="data-table-wrap" id="dataTableWrap">
+                <p class="data-empty" id="dataEmpty">调好参数后点“记录”（或按 D），把当前参数与实时量存成一行，便于课堂上做“实验数据表”。</p>
+              </div>
             </section>
 
             <section class="panel-section formula-section">
@@ -135,6 +177,8 @@
           <li><strong>选主题</strong>：在左侧列表（手机上点 ☰）按领域筛选或搜索知识点、公式。</li>
           <li><strong>调参数</strong>：拖动右侧滑块，或点 − / + 微调；双击滑块恢复默认。</li>
           <li><strong>用预设</strong>：“典型情境”一键切换到课堂常见情形，例如 u = 2f、完全弹性碰撞。</li>
+          <li><strong>做实验</strong>：点“记录”把每组参数和结果存成表格，可导出 CSV；“实时图像”可选任意物理量画随时间变化的曲线。</li>
+          <li><strong>讲解与分享</strong>：“笔”在画面上圈画批注；“图”导出图片；“链”复制带当前参数的链接；“印”打印讲义。</li>
           <li><strong>上课投影</strong>：点 ⛶ 进入演示模式（全屏、大字号），再按 Esc 或 F 退出；点击画布可暂停 / 继续。</li>
         </ol>
         <h3>键盘快捷键</h3>
@@ -147,6 +191,10 @@
           <div><dt><kbd>F</kbd></dt><dd>演示模式 / 全屏</dd></div>
           <div><dt><kbd>T</kbd></dt><dd>切换浅色 / 深色主题</dd></div>
           <div><dt><kbd>/</kbd></dt><dd>搜索主题</dd></div>
+          <div><dt><kbd>D</kbd></dt><dd>记录一行实验数据</dd></div>
+          <div><dt><kbd>P</kbd></dt><dd>画笔批注（再按退出）</dd></div>
+          <div><dt><kbd>S</kbd></dt><dd>导出当前画面为图片</dd></div>
+          <div><dt><kbd>L</kbd></dt><dd>复制带参数的分享链接</dd></div>
           <div><dt><kbd>?</kbd></dt><dd>打开本帮助</dd></div>
         </dl>
         <footer class="help-footer">
@@ -163,6 +211,7 @@
     <!-- 按依赖顺序加载；使用普通脚本而非 ES Module，保证双击 index.html（file://）即可运行 -->
     <script src="./js/utils.js"></script>
     <script src="./js/physics.js"></script>
+    <script src="./js/classroom.js"></script>
     <script src="./js/topics.js"></script>
     <script src="./js/draw.js"></script>
     <script src="./js/renderers.js"></script>

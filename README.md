@@ -21,6 +21,10 @@
 - **教学设计内置**：每个主题都附带「课堂提问 / 观察重点 / 易错提醒」和核心公式。
 - **课堂友好**：播放 / 暂停 / 单步 / 重置，支持键盘快捷键；高 DPI 屏幕（投影、平板）清晰显示。
 - **可直接分享某个主题**：地址栏会自动带上 `#主题id`，例如 `…/index.html#lens` 直接打开凸透镜成像。
+- **实时图像**：任选随时间变化的物理量，绘制随时间变化的曲线（x-t、v-t、ε-t……）。
+- **数据记录 + CSV 导出**：一键把当前参数和结果记成一行，导出后可用 Excel 打开并作图，适合“实验探究”式教学。
+- **画笔批注**：投影时直接在画面上圈画讲解，可撤销、清除。
+- **导出图片 / 打印讲义 / 分享链接**：导出带参数说明的 PNG；生成 A4 讲义；复制带当前参数的链接（如 `#lens?object=24`）。
 - **浅色 / 深色主题**：默认跟随系统，按 `T` 或点工具栏按钮切换，选择会被记住。
 - **演示模式（投影）**：点 ⛶ 或按 `F` 全屏、隐藏侧栏、放大字号，适合教室投影。
 - **典型情境预设**：如 u = 2f、完全弹性碰撞、水→空气全反射，一键切换。
@@ -55,6 +59,7 @@
 | ![电场](docs/screenshots/electric-field.png) | ![干涉](docs/screenshots/interference.png) |
 | ![透镜](docs/screenshots/lens.png) | ![光电效应](docs/screenshots/photoelectric.png) |
 | ![深色主题](docs/screenshots/dark.png) | ![演示模式](docs/screenshots/presentation.png) |
+| ![数据记录与实时图像](docs/screenshots/data-graph.png) | ![画笔批注](docs/screenshots/annotate.png) |
 | ![使用帮助](docs/screenshots/help.png) | ![手机](docs/screenshots/mobile.png) ![手机抽屉](docs/screenshots/mobile-drawer.png) |
 
 </details>
@@ -84,6 +89,10 @@
 | `Alt + ←` / `Alt + →` | 上一个 / 下一个主题 |
 | `F` | 演示模式 / 全屏（`Esc` 退出） |
 | `T` | 切换主题：跟随系统 → 浅色 → 深色 |
+| `D` | 记录一行实验数据 |
+| `P` | 画笔批注（`Z` 撤销、`Esc` 退出） |
+| `S` | 导出当前画面为 PNG |
+| `L` | 复制带当前参数的分享链接 |
 | `?` | 打开使用帮助 |
 | `/` | 聚焦搜索框 |
 | 搜索框中 `Enter` / `Esc` | 打开第一个结果 / 清空搜索 |
@@ -99,6 +108,7 @@
 ├── js/
 │   ├── utils.js        # 数学与格式化工具
 │   ├── physics.js      # 纯物理计算模型（无 DOM，可单元测试）
+│   ├── classroom.js    # 分享链接编解码、CSV 生成等纯函数
 │   ├── topics.js       # 主题数据：参数、公式、教学提示
 │   ├── draw.js         # Canvas 绘图基元与调色板
 │   ├── renderers.js    # 各主题的画面渲染器
@@ -145,6 +155,7 @@ npm run build:zip   # 重新生成离线包 dist/PhysicsTeachTool.zip
 - **Use online:** <https://teio.asia>
 - **Use offline:** download the repo / `PhysicsTeachTool.zip`, unzip, double-click `index.html`.
 - **Deep links:** append `#<topic-id>` (e.g. `#lens`, `#photoelectric`) to open a specific demo.
-- **Shortcuts:** `Space` play/pause · `R` reset · `.` step · `[`/`]` speed · `Alt+←/→` prev/next topic · `F` presentation mode · `T` theme · `?` help · `/` search · double-click a slider to reset it.
+- **Classroom tools:** live graph of any time-varying quantity, data recording with Excel-friendly CSV export, pen annotations, PNG snapshot, A4 handout printing, and shareable links that encode the current parameters (e.g. `#lens?object=24`).
+- **Shortcuts:** `D` record · `P` pen · `S` snapshot · `L` copy link · `Space` play/pause · `R` reset · `.` step · `[`/`]` speed · `Alt+←/→` prev/next topic · `F` presentation mode · `T` theme · `?` help · `/` search · double-click a slider to reset it.
 - **Classroom features:** light/dark theme (follows the OS), fullscreen presentation mode for projectors, one-click presets for typical scenarios, playback speed 0.25×–2×, mobile drawer navigation with touch-friendly steppers, first-run help.
 - **Develop:** `npm run check` runs syntax checks and the `node:test` suite (physics unit tests + renderer smoke tests across parameter extremes). See [CONTRIBUTING.md](./CONTRIBUTING.md).
